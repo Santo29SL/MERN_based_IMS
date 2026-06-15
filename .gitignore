@@ -21,3 +21,12 @@ npm-debug.log*
 
 # Coverage
 coverage/
+
+# Python Virtual Environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Local Data Landing Folders (keep CSVs out of Git)
+data-pipeline/data/
