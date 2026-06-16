@@ -39,3 +39,19 @@ Workflow -- IMS
   
 4. Delivery Partner
    - Deliver packed goods as the timeline from inventory to the customer
+
+
+
+
+ADDED A DATA ENGINEERING PIPELINE __ SIMILAR TO MEDALLION ARCHITECTURE
+STEPS:
+1. Data Ingestion in 3 levels
+    - Bronze - Raw unprocessed data
+    - Silver - Cleaned Data can be used for ML training and delta tables transformation
+    - Gold - Filtered as per buisness Requirements
+  
+2. Data Processing - Used Fabriic for tranforming csv files into singlular parquet files table manner
+3. Data visualization - Used Tableu
+
+<img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/be89990e-777b-4862-8864-4857b7a5399e" />
+
