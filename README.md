@@ -43,15 +43,14 @@ Workflow -- IMS
 
 
 
-ADDED A DATA ENGINEERING PIPELINE __ SIMILAR TO MEDALLION ARCHITECTURE
+✅ Modern Data Stack (MDS) Data Engineering Pipeline (Medallion Architecture)
 STEPS:
-1. Data Ingestion in 3 levels
-    - Bronze - Raw unprocessed data
-    - Silver - Cleaned Data can be used for ML training and delta tables transformation
-    - Gold - Filtered as per buisness Requirements
-  
-2. Data Processing - Used Fabriic for tranforming csv files into singlular parquet files table manner
-3. Data visualization - Used Tableu
+1. **Data Ingestion (Bronze Layer):** Extraction of raw collections from MongoDB and loading into PostgreSQL `bronze` staging tables via Python ([ingest_to_postgres.py](data-pipeline/ingest_to_postgres.py)).
+2. **Data Transformation (Silver & Gold Layers):** Data cleaning, typecasting, historical schema alignment, and business metric aggregations built with **dbt (Data Build Tool)** inside PostgreSQL.
+3. **Orchestration:** **Apache Airflow** DAG managing the sequential execution of raw ingestion and dbt models.
+4. **Data Visualization:** Business dashboards built by connecting **Apache Superset** to PostgreSQL `gold` metrics.
+
+Detailed setup, execution instructions, and data lineage graphs can be found in the [Data Pipeline README](data-pipeline/README.md).
 
 <img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/be89990e-777b-4862-8864-4857b7a5399e" />
 
