@@ -1,56 +1,83 @@
-Designed a secure inventory platform with JWT authentication, role-based access control, CRUD APIs, and Postman-tested REST services. Along with a simple and functional React frontend.
+# 📦 Role-Based Inventory Management System (IMS)
 
-Core Features to Implemented
-✅ Backend (Primary Focus)
-- User registration & login APIs with password hashing and JWT authentication
-- Role-based access (user vs admin)
-- CRUD APIs for a secondary entity (e.g., tasks, notes, or products)
-- API versioning, error handling, validation
-- API documentation (Postman)
-- Database schema (MongoDB)
+A secure, role-based inventory management platform designed to handle active workflows for inventory logs, restock events, and customer order management. The project is split into two core sections:
+1.  **Core Web Application:** React.js frontend and Node.js/Express.js backend utilizing JWT authentication and Role-Based Access Control (RBAC).
+2.  **Modern Data Stack (MDS) Pipeline:** Automated data warehousing using MongoDB, PostgreSQL, dbt (Data Build Tool), Apache Airflow, and Apache Superset.
 
-✅ Basic Frontend (Supportive)
-Built with React.js 
-Simple UI to:
-- Register & log in users
-- Access protected dashboard (JWT required)
-- Perform CRUD actions on the entity
-- Show error/success messages from API responses
-  
-✅ Security & Scalability
-- Secure JWT token handling
-- Input sanitization & validation
-- Scalable project structure for new modules
+---
 
-Workflow -- IMS
-- 4 types of role based entry supported
-1. Admin
-   - Add/update/delete stocks according to stock levels ie. if(low<5) Restock
-   - View Orders placed and manage packing deliverables
-   - manage overall working of the system
+## 🛠️ Technology Stack
 
-2. User/Customer
-  - Browse though available products and shop by placing order
-  - view delievry timeline
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Frontend** | React.js, Vite, Axios, CSS3 |
+| **Backend** | Node.js, Express.js, JWT (JSON Web Tokens), bcrypt.js |
+| **Database (OLTP)** | MongoDB (Operational database for website transactions) |
+| **Warehouse (OLAP)**| PostgreSQL (Analytical storage divided into Bronze, Silver, Gold schemas) |
+| **Orchestration** | Apache Airflow (Docker-based pipeline scheduling) |
+| **Transformations** | dbt (Data Build Tool for database conformed modeling) |
+| **Visualization** | Apache Superset (Analytics dashboards) |
 
-3. Warehouse Worker
-   - Deliver stock and add into inventory if restock requested by admin
-   - update stock values as per request
-  
-4. Delivery Partner
-   - Deliver packed goods as the timeline from inventory to the customer
+---
 
+## 🔑 Key Features (1st Part: Web Application)
 
+### 🔐 Secure Authentication & Access Control
+*   **Password Hashing:** Implements one-way `bcrypt` password hashing on user registration to secure credentials.
+*   **Token Authorization:** Issues secure JSON Web Tokens (JWT) upon login, required to access protected routes and endpoints.
+*   **Input Validation:** Robust server-side validation and sanitization of incoming requests to prevent injection vulnerabilities.
 
+### 🛡️ Role-Based Access Control (RBAC)
+The platform features **four distinct user roles** with customized dashboard workflows and restricted API access:
 
-✅ Modern Data Stack (MDS) Data Engineering Pipeline (Medallion Architecture)
-STEPS:
-1. **Data Ingestion (Bronze Layer):** Extraction of raw collections from MongoDB and loading into PostgreSQL `bronze` staging tables via Python ([ingest_to_postgres.py](data-pipeline/ingest_to_postgres.py)).
-2. **Data Transformation (Silver & Gold Layers):** Data cleaning, typecasting, historical schema alignment, and business metric aggregations built with **dbt (Data Build Tool)** inside PostgreSQL.
-3. **Orchestration:** **Apache Airflow** DAG managing the sequential execution of raw ingestion and dbt models.
-4. **Data Visualization:** Business dashboards built by connecting **Apache Superset** to PostgreSQL `gold` metrics.
+| Role | Access Level | Core Responsibilities |
+| :--- | :--- | :--- |
+| 👑 **Admin** | Read, Write, Delete | Add, edit, and delete products; request restocks when quantities drop below critical thresholds (`quantity < 5`); manage deliverables and oversee system security. |
+| 👤 **User/Customer** | Read, Write (Orders) | Browse the product catalog, place purchase orders, and track delivery timelines. |
+| 🛠️ **Warehouse Worker** | Read, Write (Inventory) | Update inventory logs, handle inbound shipments, and insert stocks requested by admins. |
+| 🚚 **Delivery Partner** | Read, Write (Logistics) | Fulfill shipments, update dispatch logs, and transition order statuses to "delivered". |
 
-Detailed setup, execution instructions, and data lineage graphs can be found in the [Data Pipeline README](data-pipeline/README.md).
+---
+
+## ⚙️ Data Engineering Pipeline (2nd Part: Analytics)
+
+The project incorporates a complete **Medallion Data Pipeline** to transform transactional database records into clean analytical datasets:
+
+1.  **Ingestion (Bronze Schema):** Extracts raw MongoDB collections and loads them into PostgreSQL raw staging tables using Python ([ingest_to_postgres.py](data-pipeline/ingest_to_postgres.py)).
+2.  **Transformation (Silver Schema):** Standardizes types, formats timestamps, and coalesces historical schema versions (such as linking customer/product references) using **dbt conformed models**.
+3.  **Aggregation (Gold Schema):** Compiles high-performance analytical views (sales rankings, customer lifespans, and retention distributions) via **dbt analytical models**.
+4.  **Orchestrator:** **Apache Airflow** DAGs managing the automated scheduling of ingestion and transformation.
+5.  **BI Layer:** **Apache Superset** dashboards querying the PostgreSQL `gold` schema tables.
+
+*For detailed instructions on running the data pipeline, see the [Data Pipeline README](data-pipeline/README.md).*
+
+---
+
+## 🚀 Local Quickstart Guide
+
+### 1. Start the Backend API
+```bash
+cd backend
+npm install
+npm start
+```
+*(Configure your connection strings in the `backend/.env` file).*
+
+### 2. Start the React Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 3. Spin Up the Data Infrastructure (Docker)
+Ensure Docker Desktop is active and run:
+```bash
+docker compose up -d
+```
+*   **Airflow Console:** [http://localhost:8085](http://localhost:8085)
+*   **Superset Console:** [http://localhost:8088](http://localhost:8088)
+
+---
 
 <img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/be89990e-777b-4862-8864-4857b7a5399e" />
-
