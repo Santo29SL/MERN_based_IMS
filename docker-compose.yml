@@ -1,0 +1,92 @@
+version: '3.8'
+services:
+  # Metadata storage for Apache Airflow
+  postgres-airflow:
+    image: postgres:13
+    container_name: postgres-airflow
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432" # Expose internally on host if needed (avoiding port 5432 conflict with user's host Postgres)
+
+  # Airflow Web Server UI
+  airflow-webserver:
+    image: apache/airflow:2.7.1
+    container_name: airflow-webserver
+    restart: always
+    depends_on:
+      - postgres-airflow
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres-airflow:5432/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - _PIP_ADDITIONAL_REQUIREMENTS=pymongo pandas sqlalchemy psycopg2-binary dbt-postgres dnspython
+      - DOCKER_ENV=true
+      - DB_HOST=host.docker.internal
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./data-pipeline/dags:/opt/airflow/dags
+      - ./data-pipeline:/opt/airflow/data-pipeline
+    ports:
+      - "8085:8080"
+    command: webserver
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Airflow Scheduler Engine
+  airflow-scheduler:
+    image: apache/airflow:2.7.1
+    container_name: airflow-scheduler
+    restart: always
+    depends_on:
+      - postgres-airflow
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres-airflow:5432/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - _PIP_ADDITIONAL_REQUIREMENTS=pymongo pandas sqlalchemy psycopg2-binary dbt-postgres dnspython
+      - DOCKER_ENV=true
+      - DB_HOST=host.docker.internal
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./data-pipeline/dags:/opt/airflow/dags
+      - ./data-pipeline:/opt/airflow/data-pipeline
+    command: scheduler
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Apache Superset BI Server
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    user: "root"
+    restart: always
+    ports:
+      - "8088:8088"
+    environment:
+      - SUPERSET_SECRET_KEY=inventory_superset_secret_key
+    volumes:
+      - superset_home:/app/superset_home
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        pip install --target /app/.venv/lib/python3.10/site-packages psycopg2-binary
+        superset db upgrade
+        superset fab create-admin --username admin --firstname admin --lastname admin --email admin@test.com --password admin
+        superset init
+        /usr/bin/run-server.sh
+
+volumes:
+  postgres_data:
+  superset_home:
