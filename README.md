@@ -80,4 +80,5 @@ docker compose up -d
 
 ---
 
-<img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/be89990e-777b-4862-8864-4857b7a5399e" />
+<img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/829d630c-8004-49f1-98c7-2102b4e07b9b" />
+
