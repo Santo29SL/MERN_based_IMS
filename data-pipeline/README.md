@@ -109,5 +109,6 @@ Go to [http://localhost:8085](http://localhost:8085) and click on **`inventory_p
    `postgresql://postgres:postgres@host.docker.internal:5432/slinventoryDB`
 4. Under **Datasets**, import datasets from the `gold` schema (`most_ordered_items`, `customer_order_metrics`, `customer_retention`).
 
-<img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/61c00240-8361-41c1-a30a-c78286c479ea" />
+<img width="1710" height="1112" alt="image" src="https://github.com/user-attachments/assets/ee222154-41c4-47ba-8684-8205b6274d6e" />
+
 
