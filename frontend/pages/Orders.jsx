@@ -40,6 +40,65 @@ function Orders() {
     }
   };
 
+  const renderTimeline = (order) => {
+    const steps = ["pending", "packed", "shipped", "delivered"];
+    const stepLabels = ["Placed", "Packed", "In Transit", "Delivered"];
+    const currentIndex = steps.indexOf(order.status);
+
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "2px", marginTop: "12px", padding: "5px 0", maxWidth: "380px" }}>
+        {stepLabels.map((label, idx) => {
+          const isActive = idx <= currentIndex;
+          const isCurrent = idx === currentIndex;
+          return (
+            <div key={label} style={{ display: "flex", alignItems: "center", flex: idx < 3 ? "1" : "none" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+                <div
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    borderRadius: "50%",
+                    backgroundColor: isActive ? "#3b82f6" : "#cbd5e1",
+                    border: isCurrent ? "2.5px solid #1e3a8a" : "none",
+                    boxShadow: isCurrent ? "0 0 0 3px rgba(59, 130, 246, 0.4)" : "none",
+                    transition: "all 0.3s ease",
+                    zIndex: 2
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: "0.68rem",
+                    fontWeight: isActive ? "600" : "400",
+                    color: isActive ? "#1e3a8a" : "#64748b",
+                    whiteSpace: "nowrap",
+                    marginTop: "6px",
+                    textAlign: "center"
+                  }}
+                >
+                  {label}
+                </span>
+              </div>
+              {idx < 3 && (
+                <div
+                  style={{
+                    height: "2px",
+                    backgroundColor: idx < currentIndex ? "#3b82f6" : "#cbd5e1",
+                    flexGrow: 1,
+                    margin: "0 -2px",
+                    alignSelf: "center",
+                    marginTop: "-16px",
+                    zIndex: 1,
+                    transition: "background-color 0.3s ease"
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case "pending":
@@ -108,6 +167,7 @@ function Orders() {
                     {order.product?.category && (
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>{order.product.category}</div>
                     )}
+                    {renderTimeline(order)}
                   </td>
                   <td>{order.quantity} Units</td>
                   <td>

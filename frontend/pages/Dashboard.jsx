@@ -47,7 +47,7 @@ function Dashboard() {
 
       <div className="interactive-panel">
         <h3 style={{ marginBottom: "15px" }}>Quick Management Shortcuts</h3>
-        <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", marginBottom: "25px" }}>
           <button className="btn-primary" style={{ width: "auto" }} onClick={() => navigate("/products")}>
             Manage Products Catalogue
           </button>
@@ -57,6 +57,28 @@ function Dashboard() {
           <button className="btn-secondary" style={{ width: "auto" }} onClick={() => navigate("/orders")}>
             Review All Orders
           </button>
+        </div>
+
+        <h4 style={{ marginBottom: "12px", fontSize: "1.05rem", fontWeight: "600", color: "#374151" }}>
+          Operations & Fulfillment Status
+        </h4>
+        <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 200px", padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+            <span style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: "600", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Warehouse Operations
+            </span>
+            <strong style={{ fontSize: "1.15rem", color: "#1e293b" }}>
+              {data.pendingOrders ?? 0} Pending Packing
+            </strong>
+          </div>
+          <div style={{ flex: "1 1 200px", padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+            <span style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: "600", display: "block", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Delivery Logistics
+            </span>
+            <strong style={{ fontSize: "1.15rem", color: "#1e293b" }}>
+              {data.packedOrders ?? 0} Ready to Ship &middot; {data.shippedOrders ?? 0} In Transit
+            </strong>
+          </div>
         </div>
       </div>
     </>
