@@ -17,6 +17,7 @@ SELECT
     -- Coalesce pricing/amount fields
     COALESCE(totalAmount, totalPrice) AS total_amount,
     status,
+    NULLIF(NULLIF(deliverypartner, ''), 'nan') AS delivery_partner_id,
     CASE 
         WHEN createdAt IS NOT NULL AND createdAt != '' AND createdAt != 'nan' THEN CAST(createdAt AS TIMESTAMP)
         ELSE NULL

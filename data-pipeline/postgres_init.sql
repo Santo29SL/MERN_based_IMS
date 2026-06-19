@@ -50,7 +50,8 @@ CREATE TABLE bronze.orders (
     __v INT,
     customer VARCHAR(50),
     product VARCHAR(50),
-    totalPrice NUMERIC(12, 2)
+    totalPrice NUMERIC(12, 2),
+    deliverypartner VARCHAR(50)
 );
 
 -- 4. Create Bronze Stocklogs Table (Raw Staging)
