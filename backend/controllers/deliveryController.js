@@ -11,7 +11,10 @@ async (req, res) => {
 
         const orders =
         await Order.find({
-            status: "packed"
+            $or: [
+                { status: "packed" },
+                { status: "shipped", deliveryPartner: req.user.id }
+            ]
         })
         .populate("customer")
         .populate("product");

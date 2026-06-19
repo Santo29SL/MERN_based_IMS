@@ -13,7 +13,12 @@ function Orders() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const url = role === "admin" ? "/orders" : "/orders/myorders";
+      const url =
+        role === "admin"
+          ? "/orders"
+          : role === "warehouse"
+          ? "/warehouse/orders"
+          : "/orders/myorders";
       const res = await API.get(url);
       setOrders(res.data);
     } catch (err) {
@@ -21,6 +26,17 @@ function Orders() {
       alert("Failed to load orders");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePackOrder = async (id) => {
+    try {
+      await API.put(`/warehouse/orders/${id}/packed`);
+      alert("Order marked as packed successfully!");
+      fetchOrders();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to pack order");
     }
   };
 
@@ -42,7 +58,13 @@ function Orders() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h2>{role === "admin" ? "All Orders" : "My Orders History"}</h2>
+        <h2>
+          {role === "admin"
+            ? "All Orders"
+            : role === "warehouse"
+            ? "Warehouse Order Manifest"
+            : "My Orders History"}
+        </h2>
         <button className="btn-secondary" style={{ width: "auto" }} onClick={fetchOrders}>
           🔄 Refresh Orders
         </button>
@@ -60,12 +82,13 @@ function Orders() {
             <thead>
               <tr>
                 <th>Order ID</th>
-                {role === "admin" && <th>Customer</th>}
+                {(role === "admin" || role === "warehouse") && <th>Customer</th>}
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Total Price</th>
                 <th>Order Status</th>
                 <th>Order Date</th>
+                {role === "warehouse" && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -74,7 +97,7 @@ function Orders() {
                   <td>
                     <code style={{ fontSize: "0.85rem", color: "#666" }}>{order._id}</code>
                   </td>
-                  {role === "admin" && (
+                  {(role === "admin" || role === "warehouse") && (
                     <td>
                       <div><strong>{order.customer?.name || "Deleted User"}</strong></div>
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>{order.customer?.email}</div>
@@ -98,6 +121,21 @@ function Orders() {
                   <td style={{ fontSize: "0.85rem", color: "#666" }}>
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
+                  {role === "warehouse" && (
+                    <td>
+                      {order.status === "pending" ? (
+                        <button
+                          className="btn-primary"
+                          style={{ padding: "6px 12px", fontSize: "0.85rem", width: "auto" }}
+                          onClick={() => handlePackOrder(order._id)}
+                        >
+                          📦 Pack Order
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: "0.85rem", color: "#666" }}>Ready</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
