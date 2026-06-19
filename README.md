@@ -39,7 +39,7 @@ The platform features **four distinct user roles** with customized dashboard wor
 
 ---
 
-## ⚙️ Data Engineering Pipeline (2nd Part: Analytics)
+## ⚙️ Data Engineering Pipeline (2nd Part: Analytics)  (((NOTEE:: DE PIPELINE ONLY WORKS WITH LOCAL DATABASE FOR NOW)))
 
 The project incorporates a complete **Medallion Data Pipeline** to transform transactional database records into clean analytical datasets:
 
