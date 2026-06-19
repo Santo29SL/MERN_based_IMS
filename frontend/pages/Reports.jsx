@@ -7,6 +7,7 @@ function Reports() {
   const [lowStock, setLowStock] = useState([]);
   const [outOfStock, setOutOfStock] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [advancedAnalytics, setAdvancedAnalytics] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,9 @@ function Reports() {
       } else if (activeTab === "topProducts") {
         const res = await API.get("/reports/top-products");
         setTopProducts(res.data);
+      } else if (activeTab === "advancedAnalytics") {
+        const res = await API.get("/reports/advanced-analytics");
+        setAdvancedAnalytics(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -70,6 +74,13 @@ function Reports() {
           style={{ width: "auto" }}
         >
           🏆 Best Selling
+        </button>
+        <button
+          className={activeTab === "advancedAnalytics" ? "btn-primary" : "btn-secondary"}
+          onClick={() => setActiveTab("advancedAnalytics")}
+          style={{ width: "auto" }}
+        >
+          📊 Advanced Analytics
         </button>
       </div>
 
@@ -203,6 +214,131 @@ function Reports() {
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* TAB 5: ADVANCED ANALYTICS */}
+          {activeTab === "advancedAnalytics" && advancedAnalytics && (
+            <div>
+              <h3>Advanced Operational &amp; Sales Analytics</h3>
+              <p style={{ color: "#666", marginBottom: "25px" }}>Deep analysis of peak demand hours/months, category metrics, priority alerts, and customer retention patterns.</p>
+              
+              {/* KPI CARDS */}
+              <div className="dashboard-grid" style={{ marginBottom: "30px" }}>
+                <div className="card" style={{ borderLeft: "5px solid #f59e0b", background: "linear-gradient(180deg, #fffbeb 0%, #ffffff 100%)" }}>
+                  <div className="stat-label">🚨 Priority Nudges Triggered</div>
+                  <div className="stat-value" style={{ color: "#d97706" }}>{advancedAnalytics.priorityNudgeCount} Alerts</div>
+                  <div style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "5px" }}>High-priority warehouse/delivery operations triggers.</div>
+                </div>
+                <div className="card" style={{ borderLeft: "5px solid #ef4444", background: "linear-gradient(180deg, #fef2f2 0%, #ffffff 100%)" }}>
+                  <div className="stat-label">❌ Cancelled Orders</div>
+                  <div className="stat-value" style={{ color: "#dc2626" }}>{advancedAnalytics.cancelledCount} Orders</div>
+                  <div style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "5px" }}>Orders cancelled by customer with stock restored.</div>
+                </div>
+              </div>
+
+              {/* THREE COLUMN GRID FOR METRICS */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+                
+                {/* 1. Best Selling Categories */}
+                <div style={{ background: "#ffffff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  <h4 style={{ margin: "0 0 15px 0", color: "#1e293b", fontSize: "1.1rem" }}>🏆 Best Selling Categories</h4>
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Total Units Sold</th>
+                          <th>Total Revenue</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {advancedAnalytics.bestCategories.map((c) => (
+                          <tr key={c._id}>
+                            <td><strong>{c._id}</strong></td>
+                            <td>{c.totalSold} Units</td>
+                            <td><strong style={{ color: "#16a34a" }}>${(c.totalRevenue || 0).toFixed(2)}</strong></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 2. Peak Product Demand (Month & Hour) */}
+                <div style={{ background: "#ffffff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  <h4 style={{ margin: "0 0 15px 0", color: "#1e293b", fontSize: "1.1rem" }}>🕒 Peak Product Demand Windows</h4>
+                  <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "-10px 0 15px 0" }}>Identifies the exact month and hour window that registered the highest cumulative sales per product.</p>
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Product Name</th>
+                          <th>Category</th>
+                          <th>Peak Sales Month</th>
+                          <th>Peak Sales Hour</th>
+                          <th>Peak Units Sold</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {advancedAnalytics.productPeaks.map((p) => {
+                          const monthNames = [
+                            "", "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                          ];
+                          const formatHour = (h) => {
+                            const ampm = h >= 12 ? "PM" : "AM";
+                            const displayH = h % 12 || 12;
+                            return `${displayH}:00 ${ampm}`;
+                          };
+                          return (
+                            <tr key={p.productId}>
+                              <td><strong>{p.productName}</strong></td>
+                              <td><span className="badge badge-packed">{p.category}</span></td>
+                              <td>📅 {monthNames[p.peakMonth] || `Month ${p.peakMonth}`}</td>
+                              <td>⏰ {formatHour(p.peakHour)}</td>
+                              <td><strong>{p.unitsSold} Units</strong></td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 3. Customer Retention & Repeat Buying */}
+                <div style={{ background: "#ffffff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  <h4 style={{ margin: "0 0 15px 0", color: "#1e293b", fontSize: "1.1rem" }}>👤 Customer Order Frequency &amp; Spend</h4>
+                  <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "-10px 0 15px 0" }}>Tracks repeat purchase patterns across registered test customer profiles.</p>
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Customer Name</th>
+                          <th>Email Address</th>
+                          <th>Total Orders Placed</th>
+                          <th>Total Cumulative Spend</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {advancedAnalytics.customerMetrics.map((c) => (
+                          <tr key={c._id}>
+                            <td><strong>{c.customerName}</strong></td>
+                            <td><code>{c.customerEmail}</code></td>
+                            <td>
+                              <span className={`badge ${c.orderCount > 5 ? "badge-delivered" : "badge-pending"}`}>
+                                {c.orderCount} Orders
+                              </span>
+                            </td>
+                            <td><strong>${(c.totalSpend || 0).toFixed(2)}</strong></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
             </div>
           )}
         </div>

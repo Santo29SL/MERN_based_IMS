@@ -18,7 +18,9 @@ const {
 
     salesReport,
 
-    topProductsReport
+    topProductsReport,
+
+    advancedAnalyticsReport
 
 } = require(
     "../controllers/reportController"
@@ -53,6 +55,13 @@ router.get(
     auth,
     authorize("admin"),
     topProductsReport
+);
+
+router.get(
+    "/advanced-analytics",
+    auth,
+    authorize("admin"),
+    advancedAnalyticsReport
 );
 
 
