@@ -29,7 +29,7 @@ body {
 .content {
   flex: 1;
   padding: 25px;
-  max-width: 1200px;
+  max-width: 1450px;
   width: 100%;
   margin: 0 auto;
 }
@@ -263,6 +263,12 @@ tr:hover {
 }
 
 .badge-low {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.badge-danger {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;

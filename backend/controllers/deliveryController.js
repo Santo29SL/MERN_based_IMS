@@ -17,7 +17,8 @@ async (req, res) => {
             ]
         })
         .populate("customer")
-        .populate("product");
+        .populate("product")
+        .sort({ createdAt: -1 });
 
         res.json(orders);
 

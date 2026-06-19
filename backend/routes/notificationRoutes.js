@@ -14,7 +14,9 @@ const {
 
     getNotifications,
 
-    markAsRead
+    markAsRead,
+
+    createNotification
 
 } =
 require(
@@ -27,9 +29,17 @@ router.get(
     auth,
     authorize(
         "admin",
-        "warehouse"
+        "warehouse",
+        "delivery"
     ),
     getNotifications
+);
+
+router.post(
+    "/",
+    auth,
+    authorize("admin"),
+    createNotification
 );
 
 router.put(
@@ -37,7 +47,8 @@ router.put(
     auth,
     authorize(
         "admin",
-        "warehouse"
+        "warehouse",
+        "delivery"
     ),
     markAsRead
 );

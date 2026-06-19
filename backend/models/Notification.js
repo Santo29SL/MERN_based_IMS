@@ -22,7 +22,8 @@ new mongoose.Schema(
             "RESTOCK",
             "PACKED",
             "SHIPPED",
-            "DELIVERED"
+            "DELIVERED",
+            "PRIORITY"
         ]
     },
 

@@ -146,7 +146,8 @@ async (req, res) => {
             req.user.id
 
         })
-        .populate("product");
+        .populate("product")
+        .sort({ createdAt: -1 });
 
         res.status(200)
         .json(orders);
@@ -173,7 +174,8 @@ async (req, res) => {
         const orders =
         await Order.find()
         .populate("customer")
-        .populate("product");
+        .populate("product")
+        .sort({ createdAt: -1 });
 
         res.status(200)
         .json(orders);
@@ -188,11 +190,76 @@ async (req, res) => {
 };
 
 
+// =================================
+// DELETE ORDER (ADMIN ONLY)
+// =================================
+
+const deleteOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        await Order.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Order deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+// =================================
+// CANCEL ORDER (CUSTOMER ONLY)
+// =================================
+
+const cancelOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        if (order.customer.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Not authorized to cancel this order" });
+        }
+        if (order.status !== "pending") {
+            return res.status(400).json({ message: "Only pending orders can be cancelled" });
+        }
+
+        // Restore stock
+        const product = await Product.findById(order.product);
+        if (product) {
+            product.quantity += order.quantity;
+            await product.save();
+        }
+
+        order.status = "cancelled";
+        await order.save();
+
+        // Log stock addition
+        await StockLog.create({
+            productId: order.product,
+            userId: req.user.id,
+            action: "ADD",
+            quantity: order.quantity,
+            reason: "Customer Order Cancelled"
+        });
+
+        res.status(200).json({ message: "Order cancelled successfully", order });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 module.exports = {
 
     placeOrder,
 
     getMyOrders,
 
-    getAllOrders
+    getAllOrders,
+
+    deleteOrder,
+
+    cancelOrder
 };

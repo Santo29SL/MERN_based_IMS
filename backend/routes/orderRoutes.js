@@ -16,7 +16,11 @@ const {
 
     getMyOrders,
 
-    getAllOrders
+    getAllOrders,
+
+    deleteOrder,
+
+    cancelOrder
 
 }
 =
@@ -39,6 +43,13 @@ router.get(
     getMyOrders
 );
 
+router.put(
+    "/:id/cancel",
+    auth,
+    authorize("customer"),
+    cancelOrder
+);
+
 
 // ADMIN
 
@@ -47,6 +58,13 @@ router.get(
     auth,
     authorize("admin"),
     getAllOrders
+);
+
+router.delete(
+    "/:id",
+    auth,
+    authorize("admin"),
+    deleteOrder
 );
 
 module.exports =
